@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Hue Reflex — Color Change Reaction Test</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============ MENU ============ -->
+  <main id="menu" class="screen is-active">
+    <div class="menu-card">
+      <h1 class="title">Hue&nbsp;Reflex</h1>
+      <p class="tagline">
+        How fast can you spot a color change? This test measures your reaction
+        time and shows how it depends on how <em>different</em> the two colors are.
+      </p>
+
+      <section class="field">
+        <label class="field-label">Color track</label>
+        <div class="track-grid" id="trackGrid">
+          <button class="track is-selected" data-track="grayscale">
+            <span class="track-swatches">
+              <span style="background:#000"></span><span style="background:#fff"></span>
+            </span>
+            <span class="track-name">Grayscale</span>
+            <span class="track-desc">Black → white, light gray, gray, dark gray…</span>
+          </button>
+          <button class="track" data-track="reds">
+            <span class="track-swatches">
+              <span style="background:#e00000"></span><span style="background:#ffc0cb"></span>
+            </span>
+            <span class="track-name">Shades of Red</span>
+            <span class="track-desc">Red → white, pink, light red, dark red…</span>
+          </button>
+          <button class="track" data-track="mixed">
+            <span class="track-swatches">
+              <span style="background:#2e7d32"></span><span style="background:#1565c0"></span>
+            </span>
+            <span class="track-name">Mixed Colors</span>
+            <span class="track-desc">A bit of everything, easy and hard mixed</span>
+          </button>
+          <button class="track" data-track="custom">
+            <span class="track-swatches">
+              <span id="customSwatchFrom" style="background:#1e88e5"></span>
+              <span id="customSwatchTo" style="background:#ffeb3b"></span>
+            </span>
+            <span class="track-name">Custom</span>
+            <span class="track-desc">Pick your own two colors</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="field" id="customField" hidden>
+        <label class="field-label">Your colors</label>
+        <div class="custom-pickers">
+          <label class="picker">
+            <span>Start</span>
+            <input type="color" id="customFrom" value="#1e88e5" />
+          </label>
+          <span class="arrow">→</span>
+          <label class="picker">
+            <span>Change to</span>
+            <input type="color" id="customTo" value="#ffeb3b" />
+          </label>
+        </div>
+      </section>
+
+      <section class="field">
+        <label class="field-label" for="trialsInput">
+          Number of rounds: <span id="trialsValue">8</span>
+        </label>
+        <input type="range" id="trialsInput" min="3" max="20" value="8" step="1" />
+      </section>
+
+      <button id="startBtn" class="btn btn-primary">Start Test</button>
+
+      <p class="how-to">
+        When the test begins you'll see a solid color fill the screen.
+        <strong>The moment it changes,</strong> click (or press
+        <kbd>Space</kbd>) as fast as you can. Don't jump the gun —
+        clicking too early doesn't count.
+      </p>
+    </div>
+  </main>
+
+  <!-- ============ ARENA ============ -->
+  <section id="arena" class="screen" aria-hidden="true">
+    <div id="arenaHud" class="hud">
+      <span id="hudProgress" class="hud-progress">Round 1 / 8</span>
+      <button id="quitBtn" class="hud-quit" title="Quit to menu">✕</button>
+    </div>
+    <div id="arenaCenter" class="arena-center">
+      <p id="arenaText" class="arena-text">Get ready…</p>
+      <p id="arenaSub" class="arena-sub"></p>
+    </div>
+  </section>
+
+  <!-- ============ SUMMARY ============ -->
+  <main id="summary" class="screen">
+    <div class="summary-card">
+      <h2 class="summary-title">Your Results</h2>
+
+      <div class="stat-row">
+        <div class="stat">
+          <span class="stat-num" id="statAvg">—</span>
+          <span class="stat-label">average</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="statBest">—</span>
+          <span class="stat-label">fastest</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="statMedian">—</span>
+          <span class="stat-label">median</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="statCount">—</span>
+          <span class="stat-label">rounds</span>
+        </div>
+      </div>
+
+      <p id="insight" class="insight"></p>
+
+      <div class="chart-wrap">
+        <h3 class="chart-title">Reaction time vs. how different the colors were</h3>
+        <canvas id="chart" width="720" height="380"></canvas>
+        <p class="chart-help">
+          Each dot is one round. Right = bigger color difference (easier to see).
+          The line shows the overall trend.
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table id="resultsTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Change</th>
+              <th>Difference</th>
+              <th>Reaction</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+
+      <div class="summary-actions">
+        <button id="againBtn" class="btn btn-primary">Try Again</button>
+        <button id="menuBtn" class="btn btn-ghost">Change Settings</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
