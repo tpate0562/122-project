@@ -154,7 +154,7 @@ p_anti <- anova(lm(log(rt) ~ factor(gray) + factor(subject),
 
 # Introduction
 
-When a visual scene suddenly changes, our reaction speed depends in part on how big the change in the scene is. A small modification in shade can be brushed off as margin of error in our vision, but a shift to the polar opposite possibility cant be missed.
+When a visual scene suddenly changes, our reaction speed depends in part on how big the change in the scene is. A small modification in shade can be brushed off as margin of error in our vision, but a shift to the polar opposite possibility can't be missed.
 
 This project asks a focused version of that question:
 
@@ -166,7 +166,7 @@ We built a web app in which the screen starts black and, after a random delay ju
 
 **Response variable.** Simple visual reaction time, in milliseconds. It is the elapsed time from the time the screen changes color to the time the participant hits the space bar
 
-**Treatments** The magnitude of the color change, the target gray level on the 0–255 RGB scale. We used 8 equally spaced levels: `r paste(gray_vals, collapse = ", ")`. Since every trial begins at pure black (0), each level is exactly the size of the luminance jump. This factor is fixed — we chose these evenly spaced magnitudes and wanted to fine the response relationship across them. The equal spacing is what later lets us decompose the treatment effect into interpretable trend components.
+**Treatments** The magnitude of the color change, the target gray level on the 0–255 RGB scale. We used 8 equally spaced levels: `r paste(gray_vals, collapse = ", ")`. Since every trial begins at pure black (0), each level is exactly the size of the luminance jump. This factor is fixed — we chose these evenly spaced magnitudes and wanted to find the response relationship across them. The equal spacing is what later lets us decompose the treatment effect into interpretable trend components.
 
 **Blocking** The participants (Tejas, Nathan, Josh) — 3 blocks. Blocking on person removes the variation of baseline reaction speed by comparing the eight contrast levels within each individual. We treat the block as a random effect. For the additive RCBD, the treatment $F$-test is identical whether blocks are regarded as fixed or random.
 
@@ -187,7 +187,7 @@ where $\tau_i$ is the (fixed) effect of contrast level $i$, $\beta_j$ the block 
 
 # Data Collection
 
-Procedure: Data was collected between 29 and 31 May 2026 using the browser app. On each visit a participant entered their name, read the instructions, and completed one unlogged warm-up trial followed by 40 logged trials. Every trial proceeded identically: the screen showed black, and after a random delay of 1–4 seconds (uniformly drawn to prevent anticipation) it changed to the trial's target color. The participant would hit the space bar as fast as they could; the site recorded the gray level and the reaction time and automatically advanced to the next trial. Each participant repeated the session 7 times on separate occasions. Results were never shown to the participant during the test to prevent them from trying to outperform themselves between trials, and each completed trial was streamed to an excel file via the Google Apps Script API.
+Procedure: Data was collected between 29 and 31 May 2026 using the browser app. On each visit a participant entered their name, read the instructions, and completed one unlogged warm-up trial followed by 40 logged trials. Every trial proceeded identically: the screen showed black, and after a random delay of 1–4 seconds (uniformly drawn to prevent anticipation) it changed to the trial's target color. The participant would hit the space bar as fast as they could; the site recorded the gray level and the reaction time and automatically advanced to the next trial. Each participant repeated the session 7 times on separate occasions. Results were never shown to the participant during the test to prevent them from trying to outperform themselves between trials, and each completed trial was streamed to an Excel file via the Google Apps Script API.
 
 **Challenges and adjustments.**
 
@@ -211,7 +211,7 @@ kable(tab_gray, digits = c(0, 0, 1, 1, 1), booktabs = TRUE, linesep = "")
 
 # Analysis
 
-**Data cleaning:** Following standard practice for reaction-time data, we removed two classes of invalid trials before analysis: anticipations — responses faster than 150 ms, which is below the physical floor for visual RT (we found 2) — and lapses — responses slower than three standard deviations above a participant's own mean (16 trials). This removed 18 of 840 trials (2.1%), leaving 822 for analysis; the design remained essentially balanced all with 33+ replicates per cell. All conclusions below are robust to these choices.
+**Data cleaning:** Following standard practice for reaction-time data, we removed two classes of invalid trials before analysis: anticipations — responses faster than 150 ms, which is below the physical floor for visual RT (we found 2) — and lapses — responses slower than three standard deviations above a participant's own mean (16 trials). This removed 18 of 840 trials (2.1%), leaving 822 for analysis; the design remained essentially balanced with 33+ replicates per cell. All conclusions below are robust to these choices.
 
 **Exploratory analysis:** Mean reaction time declined steadily with contrast magnitude, from 354 ms at the darkest level (32) to 315 ms at the brightest (255) — a drop of about 40 ms, or 11.2%. Participants differed much more: mean reaction times ranged from 297 to 377 ms, and the slowest participant was also the most variable. Crucially, the downward trend with contrast appears in all three participants and the per-person curves are roughly parallel, which means the effects are additive.
 
@@ -258,7 +258,7 @@ ggplot(summ, aes(gray, m, colour = subject)) +
 
 We fit the RCBD model with contrast level (the 8-level treatment) and participant (the blocks). Reaction times are strongly right-skewed, so the raw-scale model most definitely violated normality (Shapiro–Wilk $p<0.001$). Modeling $\log(\text{RT})$ resolved this: residuals were approximately normal (Shapiro–Wilk $W = 0.97$) and homogeneous across levels. That's why we based our inference on the log scale and reported effects back-transformed to a percentage scale. The block $\times$ treatment interaction was not significant $F$(14,798)=0.96 and $p$=0.498, so the additive RCBD is appropriate.
 
-**Hypothesis test:** We test $H_0: \tau_1 = \cdots = \tau_8$ (contrast magnitude has no effect on mean log-RT) against the alternative that at least one of the means differ significantly from the test. The ANOVA Table rejects the null hypothesis, meaning the contrast level is significant, $F$(7,812)=2.57 and $p$=0.013. The block effect is very large ($F$ is 54 and $p$ < 0.001), confirming that assumption that participants differ. This also shows that blocking was worth doing.
+**Hypothesis test:** We test $H_0: \tau_1 = \cdots = \tau_8$ (contrast magnitude has no effect on mean log-RT) against the alternative that at least one of the means differ significantly from the test. The ANOVA Table rejects the null hypothesis, meaning the contrast level is significant, $F$(7,812)=2.57 and $p$=0.013. The block effect is very large ($F$ is 54 and $p$ < 0.001), confirming the assumption that participants differ. This also shows that blocking was worth doing.
 
 Because the eight gray levels are evenly spaced, the most powerful way to test our hypothesis is to ask whether reaction time follows a steady trend as the change gets bigger. We split the overall treatment effect into a straight-line (linear) trend plus curved, higher-order trends — a standard breakdown known as orthogonal polynomial contrasts. The straight-line trend is highly significant ($F(1, 812) = 14.6$, $p <0.001$) and explains almost all of the difference among the eight levels, while the quadratic trend ($p = 0.243$) and all higher-order terms are not significant. In plain terms, reaction time drops in a roughly straight line as the color change grows larger. If we treat the gray level as a plain number and fit a simple regression, each one-unit increase lowers reaction time by about 0.05%, which adds up to about a 9.6% speed-up across the whole range (32 to 255).
 
@@ -298,7 +298,7 @@ bonf_sig <- bonf |>
 kable(bonf_sig, digits = c(0, 3, 0, 4), booktabs = TRUE, linesep = "")
 ```
 
-Was blocking worth it? Yes. The estimated relative efficiency of this RCBD vs a completely randomized design is about 5.8, meaning if we did a CRD we would have needed about 6x times as many observations to match the precision we obtained by blocking on participant. This large gain reflects the wide between-person spread seen in the line graph.
+Was blocking worth it? Yes. The estimated relative efficiency of this RCBD vs a completely randomized design is about 5.8, meaning if we did a CRD we would have needed about 6 times as many observations to match the precision we obtained by blocking on participant. This large gain reflects the wide between-person spread seen in the line graph.
 
 **Robustness:** The contrast effect does not depend on our analysis choices. It remains significant $p$=0.03 with no trimming at all and with only anticipations removed $p=0.009$; the linear trend is significant on the raw scale as well as the log scale. Most importantly, because trials are repeated within sessions, we refit the model as a mixed-effects model with participant and session as random effects, properly accounting for the clustering instead of counting all trials as independent. The contrast effect survives ($\chi^2(7) = 29.2$; $p < 0.001$). That also reveals where the variability in the results comes from. The session-to-session fluctuation within a person (SD 0.16 on the log scale) is larger than the difference between each participant (0.07), and trial-to-trial noise being 0.20 SD.
 
