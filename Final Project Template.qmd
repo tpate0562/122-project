@@ -154,13 +154,13 @@ p_anti <- anova(lm(log(rt) ~ factor(gray) + factor(subject),
 
 # Introduction
 
-When a visual scene suddenly changes, our reaction speed depends in part on how big the change in the scene is. A small modification in shade can be brushed off as margin of error in our vision, but a shoft to the polar opposite possibility cant be missed. This is the intuition behind many of the worlds most critical safety systems, and it is the basis of what we decided to focus this project on
+When a visual scene suddenly changes, our reaction speed depends in part on how big the change in the scene is. A small modification in shade can be brushed off as margin of error in our vision, but a shift to the polar opposite possibility cant be missed.
 
 This project asks a focused version of that question:
 
 > **Project question:** Does the magnitude of a color change affect how quickly a person reacts to it?
 
-We built a web app in which the screen starts black and, after a random delay, jumps to one of eight shades of gray. The participant reacts as soon as they detect the change. Because every trial starts from the same black baseline, the gray value of the target (0–255 RGB) is the magnitude of the change — a small value like 32 is a subtle dark-gray, while 255 is a full black-to-white jump. Our hypothesis is that larger changes produce faster reactions, and that the effect is part of a gradient rather than all-or-none. Because people differ in baseline reaction speed, we used RCBD, blocking on participant so that each person serves as their own control, and only the differences are measured from that.
+We built a web app in which the screen starts black and, after a random delay jumps to one of eight shades of gray. The participant reacts as soon as they detect the change. Because every trial starts from the same black baseline, the gray value of the target (0–255 RGB) is the magnitude of the change — a small value like 32 is a subtle dark-gray, while 255 is a full black-to-white jump. Our hypothesis is that larger changes produce faster reactions, and that the effect is part of a gradient rather than all-or-none. Because people differ in baseline reaction speed, we used RCBD, blocking on participant so that each person serves as their own control, and only the differences are measured from that.
 
 # Experimental Design
 
@@ -208,6 +208,13 @@ tab_gray <- clean |>
 kable(tab_gray, digits = c(0, 0, 1, 1, 1), booktabs = TRUE, linesep = "")
 ```
 
+
+# Analysis
+
+**Data cleaning:** Following standard practice for reaction-time data, we removed two classes of invalid trials before analysis: anticipations — responses faster than 150 ms, which is below the physical floor for visual RT (we found 2) — and lapses — responses slower than three standard deviations above a participant's own mean (16 trials). This removed 18 of 840 trials (2.1%), leaving 822 for analysis; the design remained essentially balanced all with 33+ replicates per cell. All conclusions below are robust to these choices.
+
+**Exploratory analysis:** Mean reaction time declined steadily with contrast magnitude, from 354 ms at the darkest level (32) to 315 ms at the brightest (255) — a drop of about 40 ms, or 11.2%. Participants differed much more: mean reaction times ranged from 297 to 377 ms, and the slowest participant was also the most variable. Crucially, the downward trend with contrast appears in all three participants and the per-person curves are roughly parallel, which means the effects are additive.
+
 ```{r}
 #| label: tbl-subj
 #| tbl-cap: "Reaction time (ms) by participant. Large between-person differences in speed and variability make blocking worth it."
@@ -217,12 +224,6 @@ tab_subj <- clean |>
             `Median (ms)` = median(rt), .groups = "drop")
 kable(tab_subj, digits = c(0, 0, 1, 1, 1), booktabs = TRUE, linesep = "")
 ```
-
-# Analysis
-
-**Data cleaning:** Following standard practice for reaction-time data, we removed two classes of invalid trials before analysis: anticipations — responses faster than 150 ms, which is below the physical floor for visual RT (we found 2) — and lapses — responses slower than three standard deviations above a participant's own mean (16 trials). This removed 18 of 840 trials (2.1%), leaving 822 (97.9%) for analysis; the design remained essentially balanced all with 33+ replicates per cell. All conclusions below are robust to these choices.
-
-**Exploratory analysis:** Mean reaction time declined steadily with contrast magnitude, from 354 ms at the darkest level (32) to 315 ms at the brightest (255) — a drop of about 40 ms, or 11.2%. Participants differed much more: mean reaction times ranged from 297 to 377 ms, and the slowest participant was also the most variable. Crucially, the downward trend with contrast appears in all three participants and the per-person curves are roughly parallel, which means the effects are additive.
 
 ```{r}
 #| label: fig-box
@@ -305,9 +306,12 @@ Was blocking worth it? Yes. The estimated relative efficiency of this RCBD vs a 
 
 **Key findings:** The magnitude of a color change has a small but statistically significant effect on reaction time. Larger color contrasts are detected faster, and the relationship is essentially linear over the range. Reaction time falls by roughly 40 ms or 11.2% from the 32 to 255. The effect holds across every participant, shows no block $\times$ treatment interaction, and persists under a mixed-effects model that accounts for repeated sessions. This is consistent with the expectation that stronger stimuli are processed faster.
 
-At the same time, the relative effect size also matters: contrast magnitude explains only about 1.9% of the variance in log-RT, while individual differences account for about 11.5% and ordinary trial-to-trial noise contributing the remaining 86.5%. So while bigger changes really are noticed faster, the person reacting and random noise matter far more than the size of the change. There is a difference but you hit siminishing returns pretty fast afterwards
+At the same time, the relative effect size also matters: contrast magnitude explains only about 1.9% of the variance in log-RT, while individual differences account for about 11.5% and ordinary trial-to-trial noise contributing the remaining 86.5%. So while bigger changes really are noticed faster, the person reacting and random noise matter far more than the size of the change. There is a difference but you hit diminishing returns pretty fast afterwards
 
-**Limitations:** (1) Only three participants, all of similar age, gender, and background, were measured, so generalization to global population is not applicable. (2) Computer and display, ambient lighting and input latency were not accounted for, which likely inflated measurement noise. (3) The baseline was always black, so we measured detection of luminance increments of varying size — not arbitrary differences or decrements.
+**Limitations:** \
+- (1) Only three participants, all of similar age, gender, and background, were measured, so generalization to global population is not applicable. \
+- (2) Computer and display, ambient lighting and input latency were not accounted for, which likely inflated measurement noise. \
+- (3) The baseline was always black, so we measured detection of luminance increments of varying size — not arbitrary differences or decrements.\
 
 **Possible improvements:** Recruit more participants sampled from a defined population, make everyone use the same screen with the same brightness, record time-of-day, extend the treatment factor to include going from bright to dark and also other non-grayscale colors, and given the graded response, model RT with a nonlinear function rather than a linear trend.
 
